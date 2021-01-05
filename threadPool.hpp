@@ -51,25 +51,28 @@ ThreadPool::ThreadPool(int poolNumber):_isStop(false){
             // std::unique_lock<std::mutex> lock(_m);
             // std::lock_guard<std::mutex> lock(_m);
             // std::scoped_lock<std::mutex> lock(_m);
-            std::unique_lock<std::mutex> lock(_m);
+            for(;;){
+                
+                std::unique_lock<std::mutex> lock(_m);
 
-            _cond.wait(lock,[this]{
+                _cond.wait(lock,[this]{
 
-                if(_tasks.empty() || _isStop){
+                    if(_tasks.empty() || _isStop){
 
-                    return false;
-                }
-            });
+                        return false;
+                    }
+                });
             
-            if(_isStop && _tasks.empty()){
+                if(_isStop && _tasks.empty()){
 
-                return;
+                    return;
+                }
+
+                auto task = std::move(_tasks.front());
+                _tasks.pop();
+
+                task();
             }
-
-            auto task = std::move(_tasks.front());
-            _tasks.pop();
-
-            task();
 
         }));
     }
