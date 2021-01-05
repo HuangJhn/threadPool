@@ -48,6 +48,9 @@ ThreadPool::ThreadPool(int poolNumber):_isStop(false){
 
         _thdVec.push_back(std::thread([this]{
 
+            // std::unique_lock<std::mutex> lock(_m);
+            // std::lock_guard<std::mutex> lock(_m);
+            // std::scoped_lock<std::mutex> lock(_m);
             std::unique_lock<std::mutex> lock(_m);
 
             _cond.wait(lock,[this]{
