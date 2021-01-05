@@ -15,6 +15,7 @@
 #include<mutex>
 #include<queue>
 #include<condition_variable>
+#include<memory>
 using namespace std;
 
 class ThreadPool{
@@ -76,6 +77,28 @@ ThreadPool::ThreadPool(int poolNumber):_isStop(false){
 
         }));
     }
+}
+
+template<class F,class ... Args>
+auto
+ThreadPool::pushTasks(F && f,Args &&...args)->std::future<typename std::result_of<F(Args...)>::type>{
+
+    using ret_type = typename std::result_of<F(Args...)>::type;
+
+    auto task = std::make_shared<ret_type()>
+    (std::bind(std::forward<F>(f),std::forward<Args>(args)...));
+
+    {
+        future<ret_type> res = task->get_future();
+        std::unique_lock<std::mutex> lock(_m);
+        if(_isStop)
+            return;
+        _tasks.emplace([task]{
+
+            task();
+        });
+    } 
+    return res;  
 }
 
 
