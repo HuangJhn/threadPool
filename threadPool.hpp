@@ -26,6 +26,7 @@ class ThreadPool{
         template<class F,class...Args>
         auto pushTasks(F && f, Args &&...args)->std::future<typename std::result_of<F(Args...)>::type>;
 
+        ~ThreadPool();
         ThreadPool(const ThreadPool &)=delete;
         void operator=(const ThreadPool &)=delete;
     private:
@@ -99,6 +100,18 @@ ThreadPool::pushTasks(F && f,Args &&...args)->std::future<typename std::result_o
         });
     } 
     return res;  
+}
+
+ThreadPool::~ThreadPool(){
+
+    {
+        std::unique_lock<std::mutex> lock(_m);
+        _isStop = true;
+    }
+    for(auto & thd:_thdVec){
+
+        thd.join();
+    }
 }
 
 
