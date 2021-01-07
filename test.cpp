@@ -14,14 +14,10 @@ void doTest(){
 
 int main(){
 
-    ThreadPool test(5);
+    ThreadPool tasks(10);
+    for(int i = 0; i < 10; i++){
 
-    test.pushTasks([]{
-
-        std::cout << "this content running the thread" << std::endl;
-    });
-    test.pushTasks(std::bind(doTest));
-
-    sleep(4);
+        tasks.pushTasks(std::bind(doTest));
+    }
     return 0;
 }
