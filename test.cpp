@@ -2,13 +2,15 @@
 #include<iostream>
 #include<unistd.h>
 #include"threadPool.hpp"
+#include"mylog.hpp"
 
 using namespace std;
 
 void doTest(){
 
 
-    cout << "other thread execute it" << endl;
+    // cout << "other thread execute it" << endl;
+    mylog->printLog("other thread execute it");
 
 }
 
@@ -18,7 +20,8 @@ int main(){
 
     test.pushTasks([]{
 
-        std::cout << "this content running the thread" << std::endl;
+        // std::cout << "this content running the thread" << std::endl;
+        mylog->printLog("this content running the thread");
         
     });
 
@@ -27,14 +30,20 @@ int main(){
     test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
-        test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
     test.pushTasks(std::bind(doTest));
 
+    std::vector<std::future<void>> ftVec;
 
-    // sleep(4);make
-    
+    for(int i = 0; i < 10; i++){
+
+        // ftVec = test.pushTasks();
+        ftVec.push_back(test.pushTasks(std::bind(doTest)));
+    }
+
+
     return 0;
 }
