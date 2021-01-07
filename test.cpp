@@ -14,10 +14,27 @@ void doTest(){
 
 int main(){
 
-    ThreadPool tasks(10);
-    for(int i = 0; i < 10; i++){
+    ThreadPool test(5);
 
-        tasks.pushTasks(std::bind(doTest));
-    }
+    test.pushTasks([]{
+
+        std::cout << "this content running the thread" << std::endl;
+        
+    });
+
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+        test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+    test.pushTasks(std::bind(doTest));
+
+
+    // sleep(4);make
+    
     return 0;
 }
