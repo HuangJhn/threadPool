@@ -62,13 +62,10 @@ ThreadPool::ThreadPool(int poolNumber):_isStop(false){
 
                         return false;
                     }
+                    return true;
                 });
-            
-                if(_isStop && _tasks.empty()){
-
-                    return;
-                }
-
+                if(_isStop && _tasks.empty())   return; //结束线程
+                std::cout << "executable" << std::endl;
                 auto task = std::move(_tasks.front());
                 _tasks.pop();
 
@@ -98,11 +95,26 @@ ThreadPool::pushTasks(F && f,Args &&...args)->std::future<typename std::result_o
             task();
         });
     } 
+    _cond.notify_all();
     return res;  
 }
 
+ThreadPool::~ThreadPool(){
 
+    {
+        std::unique_lock<std::mutex> lock(_m);
+        _cond.wait(lock,[this]{
 
+            if(_tasks.empty())  return true;
+            return false;
+        });
+        std::cout << "kill the thread pool" << std::endl;
+        _isStop = true;
+    }
+    for(auto & thd:_thdVec){
 
+        thd.join();
+    }
+}
 
 #endif //!_THREADPOOL_H_
