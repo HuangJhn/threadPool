@@ -64,6 +64,7 @@ ThreadPool::ThreadPool(int poolNumber):_isStop(false){
                 auto task = std::move(_tasks.front());
                 _tasks.pop();
                 task();
+                _cond.notify_one();
             }
         }));
     }

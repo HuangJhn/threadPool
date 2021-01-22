@@ -43,7 +43,7 @@ int main(){
         // ftVec = test.pushTasks();
         ftVec.push_back(test.pushTasks(std::bind(doTest)));
     }
-
+    std::cout << "over the threadpool" << std::endl;
 
     return 0;
 }
